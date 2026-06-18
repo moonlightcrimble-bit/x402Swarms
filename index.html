@@ -290,7 +290,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 40px;margin-top:40px}
 
   <!-- STATS -->
   <div class="stats">
-    <div class="stat"><div class="num">154<span class="u">M+</span></div><div class="lbl">x402 txns settled</div></div>
+    <div class="stat"><div class="num">54<span class="u">M+</span></div><div class="lbl">x402 txns settled</div></div>
     <div class="stat"><div class="num">$0.0001</div><div class="lbl">avg cost / call</div></div>
     <div class="stat"><div class="num">&lt;2<span class="u">s</span></div><div class="lbl">settlement time</div></div>
     <div class="stat"><div class="num">0<span class="u">%</span></div><div class="lbl">protocol fee</div></div>
@@ -401,7 +401,7 @@ footer{border-top:1px solid var(--line);padding:54px 0 40px;margin-top:40px}
       </div>
       <div class="ca-box">
         <span class="ca-label">CA</span>
-        <code id="ca">SWARMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>
+        <code id="ca">Evn2rdh7qgAX6kM4bnTfHThrBG6PfHHKPoydidcrswrm</code>
         <button class="copy-btn" id="copyCa" onclick="copyCA()">Copy</button>
       </div>
     </div>
@@ -481,7 +481,7 @@ npm install <span class="tok-s">@x402/svm</span>   <span class="tok-c"># Solana<
 });
 
 <span class="tok-c">// agent hits a paid endpoint — 402 handled automatically</span>
-<span class="tok-k">const</span> data = <span class="tok-k">await</span> agent.<span class="tok-f">fetch</span>(<span class="tok-s">"https://api.example.com/weather?city=cebu"</span>);
+<span class="tok-k">const</span> data = <span class="tok-k">await</span> agent.<span class="tok-f">fetch</span>(<span class="tok-s">"https://api.example.com/weather?"</span>);
 
 console.<span class="tok-f">log</span>(data.json());
 console.<span class="tok-f">log</span>(agent.<span class="tok-f">receipts</span>()); <span class="tok-c">// on-chain payment trail</span></pre>
