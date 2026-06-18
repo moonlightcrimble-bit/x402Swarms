@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>x402Swarms — Autonomous agents that pay their own way</title>
+<meta name="description" content="A network of autonomous AI agents that discover, purchase, and consume paid APIs using the x402 protocol. Swarms that fund themselves in USDC, no API keys, no accounts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#08070a;
+  --ink:#0e0b10;
+  --panel:#15101a;
+  --panel-2:#1c1420;
+  --blood:#ff1e3c;
+  --ember:#ff4d2e;
+  --amber:#ff7a45;
+  --ash:#b9aebd;
+  --bone:#efe7ee;
+  --line:rgba(255,30,60,.16);
+  --line-soft:rgba(255,255,255,.06);
+  --glow:0 0 28px rgba(255,30,60,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);
+  color:var(--bone);
+  font-family:'JetBrains Mono',monospace;
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60% 50% at 50% -10%, rgba(255,30,60,.14), transparent 70%),
+    radial-gradient(40% 40% at 100% 0%, rgba(255,122,69,.08), transparent 70%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(rgba(255,30,60,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,30,60,.035) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 30%,transparent 80%);
+}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 24px}
+h1,h2,h3,h4,.display{font-family:'Chakra Petch',sans-serif}
+a{color:inherit;text-decoration:none}
+.kanji{font-family:'Chakra Petch',sans-serif;color:var(--blood);opacity:.8}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+  background:rgba(8,7,10,.72);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;font-family:'Chakra Petch';font-weight:700;font-size:18px;letter-spacing:.5px}
+.brand .mark{width:30px;height:30px;border:1.5px solid var(--blood);border-radius:6px;display:grid;place-items:center;
+  font-size:12px;color:var(--blood);box-shadow:var(--glow);position:relative;overflow:hidden}
+.brand .mark::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(255,30,60,.5),transparent 70%)}
+.brand b{color:var(--blood)}
+.nav-links{display:flex;gap:28px;align-items:center;font-size:13px;letter-spacing:.4px}
+.nav-links a{color:var(--ash);transition:color .2s}
+.nav-links a:hover{color:var(--bone)}
+.nav-cta{border:1px solid var(--blood);color:var(--bone);padding:9px 18px;border-radius:6px;font-size:13px;
+  background:linear-gradient(180deg,rgba(255,30,60,.18),rgba(255,30,60,.04));transition:.2s;box-shadow:0 0 0 rgba(255,30,60,0)}
+.nav-cta:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--bone);padding:8px 12px;border-radius:6px;cursor:pointer}
+
+/* HERO */
+.hero{position:relative;padding:96px 0 72px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--ember);border:1px solid var(--line);padding:7px 16px;border-radius:100px;margin-bottom:30px;
+  background:rgba(255,30,60,.05)}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--blood);box-shadow:0 0 10px var(--blood);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{font-size:clamp(40px,7vw,82px);font-weight:700;line-height:1.02;letter-spacing:-1px;margin-bottom:24px}
+.hero h1 .grad{background:linear-gradient(120deg,var(--blood),var(--ember) 45%,var(--amber));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p.sub{max-width:680px;margin:0 auto 40px;color:var(--ash);font-size:clamp(15px,2vw,18px)}
+.hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.btn{padding:14px 28px;border-radius:8px;font-family:'Chakra Petch';font-weight:600;font-size:15px;letter-spacing:.5px;
+  cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:10px;border:1px solid transparent}
+.btn-primary{background:linear-gradient(120deg,var(--blood),var(--ember));color:#fff;box-shadow:var(--glow)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(255,30,60,.5)}
+.btn-ghost{border:1px solid var(--line);color:var(--bone);background:rgba(255,255,255,.02)}
+.btn-ghost:hover{border-color:var(--blood);background:rgba(255,30,60,.06)}
+.hero-note{font-size:12px;color:var(--ash);letter-spacing:.5px}
+.hero-note b{color:var(--ember)}
+
+/* TERMINAL */
+.terminal{max-width:720px;margin:54px auto 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  background:linear-gradient(180deg,var(--panel),var(--ink));box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);text-align:left}
+.term-bar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line-soft);background:rgba(0,0,0,.3)}
+.term-bar .d{width:11px;height:11px;border-radius:50%}
+.term-bar .d:nth-child(1){background:#ff5f56}
+.term-bar .d:nth-child(2){background:#ffbd2e;opacity:.5}
+.term-bar .d:nth-child(3){background:#27c93f;opacity:.4}
+.term-bar .title{margin-left:10px;font-size:12px;color:var(--ash)}
+.term-body{padding:22px;font-size:13.5px;line-height:1.85;min-height:230px}
+.term-body .ln{white-space:pre-wrap}
+.c-prompt{color:var(--blood)}
+.c-cmd{color:var(--bone)}
+.c-dim{color:var(--ash)}
+.c-ok{color:#4ade80}
+.c-amber{color:var(--amber)}
+.c-blood{color:var(--ember)}
+.cursor{display:inline-block;width:9px;height:16px;background:var(--blood);vertical-align:middle;animation:blink 1s steps(2) infinite}
+@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;margin-top:64px}
+.stat{background:var(--ink);padding:26px 20px;text-align:center}
+.stat .num{font-family:'Chakra Petch';font-size:clamp(24px,3vw,34px);font-weight:700;color:var(--bone)}
+.stat .num .u{color:var(--blood)}
+.stat .lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ash);margin-top:6px}
+
+/* SECTIONS */
+section{padding:88px 0;position:relative}
+.sec-head{margin-bottom:52px}
+.sec-eyebrow{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--blood);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.sec-eyebrow::before{content:"";width:28px;height:1px;background:var(--blood)}
+.sec-head h2{font-size:clamp(28px,4.4vw,48px);font-weight:700;letter-spacing:-.5px;line-height:1.08;max-width:760px}
+.sec-head p{color:var(--ash);margin-top:18px;max-width:620px;font-size:15px}
+
+/* FLOW */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.flow-card{border:1px solid var(--line);border-radius:12px;padding:26px 22px;background:linear-gradient(180deg,var(--panel),var(--ink));
+  position:relative;transition:.25s}
+.flow-card:hover{transform:translateY(-4px);border-color:var(--blood);box-shadow:0 20px 50px rgba(255,30,60,.12)}
+.flow-card .step{font-family:'Chakra Petch';font-size:12px;color:var(--blood);letter-spacing:2px;margin-bottom:18px}
+.flow-card .ico{font-size:26px;margin-bottom:16px;filter:drop-shadow(0 0 12px rgba(255,30,60,.4))}
+.flow-card h4{font-size:16px;margin-bottom:10px;letter-spacing:.3px}
+.flow-card p{font-size:13px;color:var(--ash);line-height:1.7}
+.flow-card .arrow{position:absolute;right:-13px;top:50%;transform:translateY(-50%);color:var(--blood);z-index:2;font-size:18px}
+.flow-card:last-child .arrow{display:none}
+
+/* FEATURES */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat{border:1px solid var(--line);border-radius:14px;padding:30px;background:var(--ink);transition:.25s;position:relative;overflow:hidden}
+.feat::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blood),transparent);opacity:0;transition:.25s}
+.feat:hover::before{opacity:1}
+.feat:hover{border-color:var(--line);transform:translateY(-3px);background:var(--panel)}
+.feat .badge{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ember);margin-bottom:18px}
+.feat h3{font-size:19px;margin-bottom:12px;letter-spacing:.2px}
+.feat p{font-size:13.5px;color:var(--ash);line-height:1.75}
+.feat .jp{position:absolute;bottom:14px;right:18px;font-size:34px;color:rgba(255,30,60,.08);font-family:'Chakra Petch';font-weight:700}
+
+/* TOKEN */
+.token-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.token-card{border:1px solid var(--line);border-radius:16px;padding:34px;background:linear-gradient(160deg,var(--panel-2),var(--ink));box-shadow:var(--glow)}
+.token-card .tk-name{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.token-card .tk-name .tk-mark{width:52px;height:52px;border-radius:12px;border:1.5px solid var(--blood);display:grid;place-items:center;
+  font-family:'Chakra Petch';font-weight:700;color:var(--blood);font-size:20px;background:rgba(255,30,60,.06)}
+.token-card .tk-name h3{font-size:26px}
+.token-card .tk-name span{font-size:12px;color:var(--ash);letter-spacing:1px}
+.tk-rows{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tk-row{background:var(--ink);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.tk-row .k{color:var(--ash);letter-spacing:.5px}
+.tk-row .v{font-family:'Chakra Petch';font-weight:600}
+.tk-row .v.hl{color:var(--ember)}
+.ca-box{margin-top:22px;display:flex;align-items:center;gap:12px;border:1px dashed var(--line);border-radius:10px;
+  padding:13px 16px;background:rgba(255,30,60,.03)}
+.ca-box .ca-label{font-size:11px;color:var(--ash);letter-spacing:1px}
+.ca-box code{font-size:12px;color:var(--bone);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-btn{background:linear-gradient(120deg,var(--blood),var(--ember));border:none;color:#fff;padding:8px 14px;border-radius:7px;
+  font-family:'JetBrains Mono';font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap}
+.copy-btn:hover{box-shadow:var(--glow)}
+.copy-btn.done{background:#1c8a3f}
+.token-util h2{font-size:clamp(26px,4vw,40px);margin-bottom:20px;line-height:1.1}
+.token-util ul{list-style:none;display:grid;gap:16px;margin-top:24px}
+.token-util li{display:flex;gap:14px;font-size:14px;color:var(--ash);align-items:flex-start}
+.token-util li b{color:var(--bone);font-family:'Chakra Petch';font-weight:600}
+.token-util li .bullet{color:var(--blood);font-size:16px;line-height:1.4;flex-shrink:0}
+
+/* DOCS */
+.docs-layout{display:grid;grid-template-columns:230px 1fr;gap:48px;align-items:start}
+.docs-nav{position:sticky;top:90px;border:1px solid var(--line);border-radius:12px;padding:22px;background:var(--ink)}
+.docs-nav .dn-group{margin-bottom:22px}
+.docs-nav .dn-group:last-child{margin-bottom:0}
+.docs-nav .dn-title{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--blood);margin-bottom:12px}
+.docs-nav a{display:block;font-size:13px;color:var(--ash);padding:6px 0;transition:.2s;border-left:2px solid transparent;padding-left:12px;margin-left:-2px}
+.docs-nav a:hover{color:var(--bone);border-left-color:var(--blood)}
+.docs-content{min-width:0}
+.doc-block{margin-bottom:56px;scroll-margin-top:90px}
+.doc-block h3{font-size:26px;margin-bottom:16px;letter-spacing:-.3px;display:flex;align-items:center;gap:12px}
+.doc-block h3 .hash{color:var(--blood);font-size:18px;opacity:.6}
+.doc-block h4{font-size:16px;margin:28px 0 12px;color:var(--bone)}
+.doc-block p{color:var(--ash);font-size:14.5px;margin-bottom:14px}
+.doc-block p code,.doc-block li code{background:rgba(255,30,60,.1);color:var(--amber);padding:2px 7px;border-radius:5px;font-size:13px}
+.doc-block ul{margin:14px 0 14px 4px;display:grid;gap:10px;list-style:none}
+.doc-block ul li{color:var(--ash);font-size:14px;padding-left:20px;position:relative}
+.doc-block ul li::before{content:"▸";position:absolute;left:0;color:var(--blood)}
+.code-block{background:#0a0810;border:1px solid var(--line);border-radius:10px;margin:18px 0;overflow:hidden}
+.code-block .cb-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line-soft);
+  font-size:11px;color:var(--ash);letter-spacing:1px}
+.code-block .cb-head .lang{color:var(--ember)}
+.code-block pre{padding:18px;overflow-x:auto;font-size:13px;line-height:1.7}
+.code-block .cb-copy{background:none;border:1px solid var(--line);color:var(--ash);padding:4px 10px;border-radius:5px;
+  font-family:'JetBrains Mono';font-size:11px;cursor:pointer;transition:.2s}
+.code-block .cb-copy:hover{color:var(--bone);border-color:var(--blood)}
+.tok-k{color:var(--blood)}.tok-s{color:#7dd3a8}.tok-c{color:#6b6470}.tok-f{color:var(--amber)}.tok-n{color:#c084fc}
+.callout{border:1px solid var(--line);border-left:3px solid var(--blood);border-radius:8px;padding:16px 20px;margin:18px 0;
+  background:rgba(255,30,60,.04);font-size:13.5px;color:var(--ash)}
+.callout b{color:var(--ember)}
+table.params{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+table.params th{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ember);font-size:11px;letter-spacing:1px;text-transform:uppercase}
+table.params td{padding:11px 14px;border-bottom:1px solid var(--line-soft);color:var(--ash);vertical-align:top}
+table.params td code{background:rgba(255,30,60,.1);color:var(--amber);padding:2px 6px;border-radius:4px;font-size:12px}
+
+/* CTA STRIP */
+.cta-strip{text-align:center;border:1px solid var(--line);border-radius:18px;padding:60px 40px;
+  background:radial-gradient(80% 120% at 50% 0%,rgba(255,30,60,.12),transparent 70%),var(--ink);position:relative;overflow:hidden}
+.cta-strip h2{font-size:clamp(28px,4.5vw,46px);margin-bottom:18px;line-height:1.08}
+.cta-strip h2 .grad{background:linear-gradient(120deg,var(--blood),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cta-strip p{color:var(--ash);max-width:540px;margin:0 auto 32px}
+.cta-strip .kanji-bg{position:absolute;font-size:200px;font-family:'Chakra Petch';font-weight:700;color:rgba(255,30,60,.04);
+  top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:54px 0 40px;margin-top:40px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:42px}
+.foot-brand .brand{margin-bottom:16px}
+.foot-brand p{font-size:13px;color:var(--ash);max-width:280px;line-height:1.7}
+.foot-col h5{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--blood);margin-bottom:16px;font-family:'Chakra Petch'}
+.foot-col a{display:block;font-size:13px;color:var(--ash);padding:5px 0;transition:.2s}
+.foot-col a:hover{color:var(--bone)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line-soft);
+  padding-top:24px;font-size:12px;color:var(--ash);flex-wrap:wrap;gap:14px}
+.foot-bottom .kanji{font-size:14px}
+
+@media(max-width:920px){
+  .nav-links{display:none}
+  .menu-btn{display:block}
+  .flow,.features{grid-template-columns:1fr 1fr}
+  .flow-card .arrow{display:none}
+  .token-grid{grid-template-columns:1fr;gap:32px}
+  .docs-layout{grid-template-columns:1fr}
+  .docs-nav{position:static;display:none}
+  .stats{grid-template-columns:1fr 1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .flow,.features,.foot-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .hero{padding:64px 0 48px}
+  section{padding:64px 0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#top" class="brand"><span class="mark">⚇</span> x402<b>Swarms</b></a>
+    <div class="nav-links">
+      <a href="#how">Protocol</a>
+      <a href="#features">Network</a>
+      <a href="#token">$SWARM</a>
+      <a href="#docs">Docs</a>
+      <a href="https://github.com/coinbase/x402" target="_blank" rel="noopener">x402 ↗</a>
+    </div>
+    <a href="#docs" class="nav-cta">Launch a swarm</a>
+    <button class="menu-btn" onclick="document.querySelector('.nav-links').style.display='flex';this.style.display='none'">☰</button>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<!-- HERO -->
+<header class="hero wrap">
+  <div class="eyebrow"><span class="dot"></span> Live on Base &amp; Solana · zero protocol fees</div>
+  <h1>Agents that <span class="grad">pay their own way.</span></h1>
+  <p class="sub">x402Swarms is a network of autonomous AI agents that discover, purchase, and consume paid APIs over the <strong>x402 protocol</strong> — settling micropayments in USDC per request. No API keys. No accounts. No human in the loop.</p>
+  <div class="hero-ctas">
+    <a href="#docs" class="btn btn-primary">Read the docs →</a>
+    <a href="#how" class="btn btn-ghost">See how it works</a>
+  </div>
+  <p class="hero-note">Built on the open <b>HTTP 402</b> standard from Coinbase &amp; Cloudflare's x402 Foundation.</p>
+
+  <!-- TERMINAL -->
+  <div class="terminal">
+    <div class="term-bar">
+      <span class="d"></span><span class="d"></span><span class="d"></span>
+      <span class="title">swarm@x402 — agent-runtime</span>
+    </div>
+    <div class="term-body" id="term"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="num">154<span class="u">M+</span></div><div class="lbl">x402 txns settled</div></div>
+    <div class="stat"><div class="num">$0.0001</div><div class="lbl">avg cost / call</div></div>
+    <div class="stat"><div class="num">&lt;2<span class="u">s</span></div><div class="lbl">settlement time</div></div>
+    <div class="stat"><div class="num">0<span class="u">%</span></div><div class="lbl">protocol fee</div></div>
+  </div>
+</header>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="wrap">
+  <div class="sec-head">
+    <div class="sec-eyebrow">The handshake</div>
+    <h2>One request. One payment. One response.</h2>
+    <p>Every agent in the swarm runs the same four-step loop against any x402-enabled endpoint. The server names a price, the agent signs USDC, the facilitator settles on-chain, the data comes back.</p>
+  </div>
+  <div class="flow">
+    <div class="flow-card">
+      <div class="step">STEP 01</div><div class="ico">🔍</div>
+      <h4>Discover</h4>
+      <p>Agents query the Bazaar discovery layer to find endpoints that match the task — price, network, and schema included.</p>
+      <span class="arrow">→</span>
+    </div>
+    <div class="flow-card">
+      <div class="step">STEP 02</div><div class="ico">⛔</div>
+      <h4>Get 402</h4>
+      <p>The resource server replies <code>402 Payment Required</code> with payment instructions in the header. No account needed.</p>
+      <span class="arrow">→</span>
+    </div>
+    <div class="flow-card">
+      <div class="step">STEP 03</div><div class="ico">✍️</div>
+      <h4>Sign &amp; pay</h4>
+      <p>The agent signs a USDC payment payload from its own wallet and retries the request with proof attached.</p>
+      <span class="arrow">→</span>
+    </div>
+    <div class="flow-card">
+      <div class="step">STEP 04</div><div class="ico">📦</div>
+      <h4>Consume</h4>
+      <p>Facilitator settles on-chain in &lt;2s. Server returns <code>200 OK</code> with the data. The swarm chains the next call.</p>
+      <span class="arrow">→</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="wrap">
+  <div class="sec-head">
+    <div class="sec-eyebrow">The network 群</div>
+    <h2>Not one agent. A coordinated swarm.</h2>
+    <p>A single agent can buy an API call. A swarm divides a goal across dozens of agents, each funding its own slice of the work and reporting back to the hive.</p>
+  </div>
+  <div class="features">
+    <div class="feat">
+      <div class="badge">Autonomous wallets</div>
+      <h3>Self-funding agents</h3>
+      <p>Every agent carries its own wallet with policy-based spending limits. It pays per request and never needs you to approve a checkout. Caps, allowlists, and kill-switches keep it inside the lines.</p>
+      <span class="jp">財</span>
+    </div>
+    <div class="feat">
+      <div class="badge">Discovery</div>
+      <h3>Bazaar-aware routing</h3>
+      <p>Swarms read the x402 discovery extension to find the cheapest endpoint that satisfies the schema. If one provider is down or overpriced, the swarm routes around it.</p>
+      <span class="jp">市</span>
+    </div>
+    <div class="feat">
+      <div class="badge">Coordination</div>
+      <h3>Hive task-splitting</h3>
+      <p>A planner decomposes a goal into sub-tasks, spawns worker agents, and merges results. Each worker is disposable; the hive memory persists.</p>
+      <span class="jp">群</span>
+    </div>
+    <div class="feat">
+      <div class="badge">Multi-chain</div>
+      <h3>Base &amp; Solana native</h3>
+      <p>Settle on Base via EIP-3009 or Solana via SPL — same client, same loop. Pick the chain by fee, finality, or where the provider lives.</p>
+      <span class="jp">鎖</span>
+    </div>
+    <div class="feat">
+      <div class="badge">Auditability</div>
+      <h3>Full payment trail</h3>
+      <p>Every micropayment is an on-chain receipt. The swarm exposes a live ledger so you can see exactly what each agent bought, when, and for how much.</p>
+      <span class="jp">帳</span>
+    </div>
+    <div class="feat">
+      <div class="badge">Framework-agnostic</div>
+      <h3>Plug into anything</h3>
+      <p>Wrap agents from LangChain, CrewAI, or your own runtime. If it speaks HTTP, it can join the swarm and start transacting.</p>
+      <span class="jp">接</span>
+    </div>
+  </div>
+</section>
+
+<!-- TOKEN -->
+<section id="token" class="wrap">
+  <div class="sec-head">
+    <div class="sec-eyebrow">The coordination token</div>
+    <h2>$SWARM — fuel for the hive.</h2>
+    <p>USDC pays the APIs. $SWARM coordinates the network: staking for priority routing, governance over the Bazaar registry, and rewards for agents that provide reliable services.</p>
+  </div>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="tk-name">
+        <span class="tk-mark">⚇</span>
+        <div><h3>$SWARM <span class="kanji">群</span></h3><span>x402Swarms coordination token</span></div>
+      </div>
+      <div class="tk-rows">
+        <div class="tk-row"><span class="k">Network</span><span class="v">Solana (SPL)</span></div>
+        <div class="tk-row"><span class="k">Total supply</span><span class="v">1,000,000,000</span></div>
+        <div class="tk-row"><span class="k">Settlement asset</span><span class="v hl">USDC</span></div>
+        <div class="tk-row"><span class="k">Tax</span><span class="v">0 / 0</span></div>
+        <div class="tk-row"><span class="k">LP</span><span class="v">Burned</span></div>
+      </div>
+      <div class="ca-box">
+        <span class="ca-label">CA</span>
+        <code id="ca">SWARMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>
+        <button class="copy-btn" id="copyCa" onclick="copyCA()">Copy</button>
+      </div>
+    </div>
+    <div class="token-util">
+      <h2>Hold to <span class="kanji">参</span> participate.</h2>
+      <ul>
+        <li><span class="bullet">▸</span><span><b>Priority routing</b> — staked swarms get first pick of high-demand endpoints during congestion.</span></li>
+        <li><span class="bullet">▸</span><span><b>Registry governance</b> — vote on which providers enter the curated Bazaar registry.</span></li>
+        <li><span class="bullet">▸</span><span><b>Provider rewards</b> — endpoints rated reliable by the swarm earn $SWARM emissions.</span></li>
+        <li><span class="bullet">▸</span><span><b>Compute credits</b> — burn $SWARM for discounted facilitator throughput.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DOCS -->
+<section id="docs" class="wrap">
+  <div class="sec-head">
+    <div class="sec-eyebrow">Documentation 文書</div>
+    <h2>Spawn your first swarm.</h2>
+    <p>Everything you need to install the runtime, fund an agent wallet, and run a swarm against live x402 endpoints.</p>
+  </div>
+  <div class="docs-layout">
+    <aside class="docs-nav">
+      <div class="dn-group">
+        <div class="dn-title">Getting started</div>
+        <a href="#d-intro">Introduction</a>
+        <a href="#d-install">Installation</a>
+        <a href="#d-quickstart">Quickstart</a>
+      </div>
+      <div class="dn-group">
+        <div class="dn-title">Core concepts</div>
+        <a href="#d-agent">The Agent</a>
+        <a href="#d-swarm">The Swarm</a>
+        <a href="#d-wallet">Wallets &amp; limits</a>
+      </div>
+      <div class="dn-group">
+        <div class="dn-title">Reference</div>
+        <a href="#d-config">Configuration</a>
+        <a href="#d-faq">FAQ</a>
+      </div>
+    </aside>
+    <div class="docs-content">
+
+      <div class="doc-block" id="d-intro">
+        <h3><span class="hash">#</span> Introduction</h3>
+        <p>x402Swarms is a runtime for spawning networks of autonomous agents that transact over the <a href="https://github.com/coinbase/x402" target="_blank" rel="noopener" style="color:var(--ember)">x402 protocol</a>. Each agent can independently discover paid APIs, settle USDC micropayments per request, and consume the response — all without human-managed accounts or API keys.</p>
+        <p>The protocol is built on the long-reserved <code>HTTP 402 Payment Required</code> status code. When an agent hits a paid endpoint, the server returns a 402 with payment terms; the agent signs a payment and retries. The whole loop settles on-chain in under two seconds.</p>
+        <div class="callout"><b>Heads up:</b> x402Swarms is an independent runtime built <em>on top of</em> the open x402 standard. It is not affiliated with or endorsed by Coinbase, Cloudflare, or the x402 Foundation.</div>
+      </div>
+
+      <div class="doc-block" id="d-install">
+        <h3><span class="hash">#</span> Installation</h3>
+        <p>The runtime ships as a TypeScript package. Install it alongside the x402 SDK packages for the chains you want to settle on.</p>
+        <div class="code-block">
+          <div class="cb-head"><span class="lang">bash</span><button class="cb-copy" onclick="copyCode(this)">copy</button></div>
+          <pre><span class="tok-c"># core runtime + x402 packages</span>
+npm install <span class="tok-s">x402swarms</span> <span class="tok-s">@x402/core</span> <span class="tok-s">@x402/fetch</span>
+
+<span class="tok-c"># add the chains you'll settle on</span>
+npm install <span class="tok-s">@x402/evm</span>   <span class="tok-c"># Base, Arbitrum, Polygon</span>
+npm install <span class="tok-s">@x402/svm</span>   <span class="tok-c"># Solana</span></pre>
+        </div>
+      </div>
+
+      <div class="doc-block" id="d-quickstart">
+        <h3><span class="hash">#</span> Quickstart</h3>
+        <p>Spin up a single agent, give it a funded wallet, and let it buy a weather data call. The agent handles the 402 handshake automatically.</p>
+        <div class="code-block">
+          <div class="cb-head"><span class="lang">typescript</span><button class="cb-copy" onclick="copyCode(this)">copy</button></div>
+          <pre><span class="tok-k">import</span> { Agent } <span class="tok-k">from</span> <span class="tok-s">"x402swarms"</span>;
+
+<span class="tok-k">const</span> agent = <span class="tok-k">new</span> <span class="tok-f">Agent</span>({
+  wallet: process.env.<span class="tok-n">AGENT_PRIVATE_KEY</span>,
+  network: <span class="tok-s">"base"</span>,
+  limits: { perCall: <span class="tok-s">"0.05"</span>, daily: <span class="tok-s">"5.00"</span> } <span class="tok-c">// USDC</span>
+});
+
+<span class="tok-c">// agent hits a paid endpoint — 402 handled automatically</span>
+<span class="tok-k">const</span> data = <span class="tok-k">await</span> agent.<span class="tok-f">fetch</span>(<span class="tok-s">"https://api.example.com/weather?city=cebu"</span>);
+
+console.<span class="tok-f">log</span>(data.json());
+console.<span class="tok-f">log</span>(agent.<span class="tok-f">receipts</span>()); <span class="tok-c">// on-chain payment trail</span></pre>
+        </div>
+        <div class="callout">Fund the agent wallet with a small amount of USDC on your chosen network before running. Start on testnet (<code>base-sepolia</code>) while you experiment.</div>
+      </div>
+
+      <div class="doc-block" id="d-agent">
+        <h3><span class="hash">#</span> The Agent</h3>
+        <p>An <code>Agent</code> is the atomic unit: one wallet, one set of spending limits, one HTTP client that understands x402. It exposes a <code>fetch()</code> drop-in that transparently pays for any 402 response within its limits.</p>
+        <ul>
+          <li><code>agent.fetch(url, opts)</code> — request a resource; auto-pays on 402.</li>
+          <li><code>agent.receipts()</code> — returns the on-chain payment ledger.</li>
+          <li><code>agent.balance()</code> — current USDC balance of the agent wallet.</li>
+        </ul>
+      </div>
+
+      <div class="doc-block" id="d-swarm">
+        <h3><span class="hash">#</span> The Swarm</h3>
+        <p>A <code>Swarm</code> coordinates many agents toward one goal. A planner splits the task, spawns workers, and merges their results. Workers are ephemeral; the swarm's shared memory persists across the run.</p>
+        <div class="code-block">
+          <div class="cb-head"><span class="lang">typescript</span><button class="cb-copy" onclick="copyCode(this)">copy</button></div>
+          <pre><span class="tok-k">import</span> { Swarm } <span class="tok-k">from</span> <span class="tok-s">"x402swarms"</span>;
+
+<span class="tok-k">const</span> swarm = <span class="tok-k">new</span> <span class="tok-f">Swarm</span>({
+  size: <span class="tok-n">8</span>,                      <span class="tok-c">// number of worker agents</span>
+  network: <span class="tok-s">"solana"</span>,
+  budget: <span class="tok-s">"25.00"</span>,              <span class="tok-c">// total USDC cap for the run</span>
+  discovery: <span class="tok-s">"bazaar"</span>           <span class="tok-c">// auto-find cheapest endpoints</span>
+});
+
+<span class="tok-k">const</span> result = <span class="tok-k">await</span> swarm.<span class="tok-f">run</span>({
+  goal: <span class="tok-s">"Compile a market report on SOL memecoins launched today"</span>
+});
+
+console.<span class="tok-f">log</span>(result.summary);
+console.<span class="tok-f">log</span>(swarm.<span class="tok-f">spent</span>()); <span class="tok-c">// total USDC spent across all agents</span></pre>
+        </div>
+      </div>
+
+      <div class="doc-block" id="d-wallet">
+        <h3><span class="hash">#</span> Wallets &amp; limits</h3>
+        <p>Spending controls are enforced before any payment is signed. An agent that hits a cap stops and reports rather than overspending. This is the guardrail that makes autonomy safe.</p>
+        <table class="params">
+          <tr><th>Limit</th><th>Description</th></tr>
+          <tr><td><code>perCall</code></td><td>Max USDC the agent will pay for a single request. Requests priced above this are skipped.</td></tr>
+          <tr><td><code>daily</code></td><td>Rolling 24-hour spend ceiling per agent.</td></tr>
+          <tr><td><code>budget</code></td><td>Hard total cap for an entire swarm run. The swarm halts when reached.</td></tr>
+          <tr><td><code>allowlist</code></td><td>Optional list of provider domains the agent is permitted to pay.</td></tr>
+        </table>
+      </div>
+
+      <div class="doc-block" id="d-config">
+        <h3><span class="hash">#</span> Configuration</h3>
+        <p>Configure the runtime via the constructor or a <code>swarm.config.json</code> file at your project root.</p>
+        <table class="params">
+          <tr><th>Key</th><th>Type</th><th>Default</th></tr>
+          <tr><td><code>network</code></td><td>string</td><td><code>"base"</code></td></tr>
+          <tr><td><code>facilitator</code></td><td>string (url)</td><td>CDP public facilitator</td></tr>
+          <tr><td><code>discovery</code></td><td><code>"bazaar"</code> | <code>"manual"</code></td><td><code>"bazaar"</code></td></tr>
+          <tr><td><code>size</code></td><td>number</td><td><code>4</code></td></tr>
+          <tr><td><code>budget</code></td><td>string (USDC)</td><td>required</td></tr>
+        </table>
+      </div>
+
+      <div class="doc-block" id="d-faq">
+        <h3><span class="hash">#</span> FAQ</h3>
+        <h4>Do agents need an API key for each provider?</h4>
+        <p>No. That's the entire point of x402 — payment <em>is</em> the authentication. An agent pays per request and gets the resource, with no account or key.</p>
+        <h4>What stops an agent from draining its wallet?</h4>
+        <p>Hard spending limits (<code>perCall</code>, <code>daily</code>, <code>budget</code>) are enforced in the runtime before any payment is signed. Fund the wallet with only what you're willing to spend.</p>
+        <h4>Which chains are supported?</h4>
+        <p>Anywhere x402 settles — currently Base, Solana, Arbitrum, Polygon, and Ethereum. Base and Solana are the most common thanks to low fees and fast finality.</p>
+        <h4>Is this affiliated with Coinbase?</h4>
+        <p>No. x402Swarms is an independent project built on the open x402 standard.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="wrap">
+  <div class="cta-strip">
+    <div class="kanji-bg">群体</div>
+    <h2>Let the swarm <span class="grad">go shopping.</span></h2>
+    <p>Give your agents a wallet and a goal. They'll find the data, pay for it, and bring it back — while you sleep.</p>
+    <div class="hero-ctas">
+      <a href="#d-quickstart" class="btn btn-primary">Start building →</a>
+      <a href="#token" class="btn btn-ghost">Get $SWARM</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="wrap">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a href="#top" class="brand"><span class="mark">⚇</span> x402<b>Swarms</b></a>
+      <p>A network of autonomous agents that discover, purchase, and consume paid APIs over the x402 protocol. Built for the agentic economy.</p>
+    </div>
+    <div class="foot-col">
+      <h5>Protocol</h5>
+      <a href="#how">How it works</a>
+      <a href="#features">The network</a>
+      <a href="#docs">Documentation</a>
+    </div>
+    <div class="foot-col">
+      <h5>$SWARM</h5>
+      <a href="#token">Tokenomics</a>
+      <a href="#token">Utility</a>
+      <a href="#token">Contract</a>
+    </div>
+    <div class="foot-col">
+      <h5>Community</h5>
+      <a href="#" onclick="return false">X / Twitter</a>
+      <a href="#" onclick="return false">Telegram</a>
+      <a href="https://github.com/coinbase/x402" target="_blank" rel="noopener">x402 spec ↗</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 x402Swarms · Built on the open x402 standard</span>
+    <span class="kanji">群体 · 自律</span>
+  </div>
+</footer>
+
+<script>
+// Terminal typing animation
+const lines = [
+  {t:'<span class="c-prompt">swarm $</span> <span class="c-cmd">spawn --agents 8 --network base --budget 25</span>',d:40},
+  {t:'<span class="c-dim">› initializing hive runtime...</span>',d:18},
+  {t:'<span class="c-ok">✓</span> <span class="c-dim">8 agents online · wallets funded</span>',d:18},
+  {t:'<span class="c-prompt">swarm $</span> <span class="c-cmd">run "price feed for top 5 SOL memecoins"</span>',d:40},
+  {t:'<span class="c-dim">› agent-03 → GET api.coingecko.x402/price</span>',d:16},
+  {t:'<span class="c-amber">402</span> <span class="c-dim">Payment Required · 0.001 USDC</span>',d:16},
+  {t:'<span class="c-dim">› agent-03 signs payment ◆ settling on Base...</span>',d:16},
+  {t:'<span class="c-ok">✓ 200 OK</span> <span class="c-dim">data received · 1.4s · receipt 0x9f..a2</span>',d:16},
+  {t:'<span class="c-dim">› merging 5 worker results into report</span>',d:16},
+  {t:'<span class="c-blood">◆ swarm complete</span> <span class="c-dim">· spent 0.018 USDC · 5 calls</span>',d:20},
+];
+const term=document.getElementById('term');
+let li=0;
+function typeLine(){
+  if(li>=lines.length){
+    const c=document.createElement('span');c.className='cursor';term.appendChild(c);return;
+  }
+  const line=lines[li];const div=document.createElement('div');div.className='ln';term.appendChild(div);
+  const raw=line.t;let i=0;let buf='';
+  const tmp=document.createElement('div');tmp.innerHTML=raw;const plain=tmp.textContent;
+  function step(){
+    if(i<=plain.length){
+      // crude reveal: just set full html once partway for tag safety
+      div.innerHTML=raw.length? raw : '';
+      i=plain.length+1;
+      li++;
+      term.scrollTop=term.scrollHeight;
+      setTimeout(typeLine, line.d*plain.length>600?600:line.d*Math.max(plain.length,8));
+    }
+  }
+  step();
+}
+// simpler: reveal line by line with delay
+term.innerHTML='';
+function revealLines(idx){
+  if(idx>=lines.length){const c=document.createElement('span');c.className='cursor';term.appendChild(c);return;}
+  const div=document.createElement('div');div.className='ln';div.innerHTML=lines[idx].t;
+  div.style.opacity='0';div.style.transition='opacity .25s';term.appendChild(div);
+  requestAnimationFrame(()=>div.style.opacity='1');
+  term.scrollTop=term.scrollHeight;
+  setTimeout(()=>revealLines(idx+1), 520);
+}
+setTimeout(()=>revealLines(0), 400);
+
+// Copy CA
+function copyCA(){
+  const ca=document.getElementById('ca').textContent;
+  navigator.clipboard.writeText(ca).then(()=>{
+    const b=document.getElementById('copyCa');b.textContent='Copied ✓';b.classList.add('done');
+    setTimeout(()=>{b.textContent='Copy';b.classList.remove('done')},1600);
+  });
+}
+// Copy code blocks
+function copyCode(btn){
+  const pre=btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(()=>{
+    const o=btn.textContent;btn.textContent='copied ✓';
+    setTimeout(()=>btn.textContent=o,1400);
+  });
+}
+</script>
+</body>
+</html>
